@@ -95,20 +95,22 @@ class Navbar extends React.Component {
       <div className="dropdown-content">
 
       <a href="#colorPicker" className="toggle-color" onClick={ this.props.handleClick }>Pick Color</a>
-      <a href="#" className="more-pencil" onClick={this.props.toggleHidden}>Pencil</a>
+      <a href="#morePencils" className="more-pencil" onClick={this.props.toggleHidden}>Pencil</a>
      
       {!this.props.isHidden && (<ul>
-            <a href="">Pencil</a>
-            <a href="">Line</a>
-            <a href="">Rectangle</a>
-            <a href="">Circle</a>
-            <a href="">Select</a>
-            <a href="">Move</a>
+            <a href="#pencil">Pencil</a>
+            <a href="#line">Line</a>
+            <a href="#rectangle">Rectangle</a>
+            <a href="#circle">Circle</a>
+            <a href="#select">Select</a>
+            <a href="#move">Move</a>
         </ul>
       )}
-      <a href="#">Linewidth</a>
+      <a href="#linewidth">Linewidth</a>
       </div>
+      
     </div>
+
     )
   }
 }
