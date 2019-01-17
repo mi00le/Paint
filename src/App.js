@@ -5,7 +5,7 @@ import './sketch.css';
 import {SketchField, Tools} from 'react-sketch';
 import { SketchPicker } from 'react-color'
 import reactCSS from 'reactcss'
-
+import ToolBar from './Components/ToolBar/index.js';
 class App extends Component {
   constructor(props){
     super(props);
@@ -53,6 +53,7 @@ class App extends Component {
 
     return (
       <div className="App">
+      <ToolBar/>
         <Navbar handleClick={this.handleClick} toggleHidden={this.toggleHidden} isHidden={this.state.isHidden}/>
         { this.state.displayColorPicker ? <div style={ popover }>
           <div style={ cover } onClick={ this.handleClose }/>
@@ -72,11 +73,13 @@ class SketchFieldDemo extends React.Component {
   render() {
      return (
        
-         <SketchField width='1024px' 
-                      height='768px' 
+         <SketchField width='800px' 
+                      height='700px' 
                       tool={Tools.Pencil} 
                       lineColor={this.props.color}
                       lineWidth={3}
+                      backgroundColor='white'
+                      style={{position:"relative",margin:"auto",top:"20px"}}
                       />
      )
   }

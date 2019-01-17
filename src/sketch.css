@@ -1,3 +1,6 @@
+body{
+  background-color: black;
+}
 .toggle-color{
    
 }
@@ -48,3 +51,10 @@
   .more-pencil:hover .show{
     background-color: #3e8e41;
   }
+
+
+
+.canvas-container{
+  outline: thick solid #00ff00
+}
+
