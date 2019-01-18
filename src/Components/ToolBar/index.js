@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser } from 'react-icons/fa';
+import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser,FaSave,FaCloudUploadAlt } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 
 export default class Toolbar extends React.Component {
@@ -78,7 +78,7 @@ export default class Toolbar extends React.Component {
                             {/* <MenuItem divider />
                             <MenuItem eventKey={3.3}>Separated link</MenuItem> */}
                         </NavDropdown>
-                        <NavItem eventKey={2} href="#clear" onClick={ this.props.handleClear }>
+                        <NavItem eventKey={2} href="#clear" onClick={this.props.handleClear }>
                             Clear Canvas
                         </NavItem>
                     </Nav>
@@ -90,12 +90,29 @@ export default class Toolbar extends React.Component {
                                 </div>
                             </IconContext.Provider>
                         </NavItem>
-                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={this.props.redo } disabled={!this.props.canRedo}>
+                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { console.log("undo")}}>
                         <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaRedo />
                                 </div>
                             </IconContext.Provider>
+                            
+                        </NavItem>
+                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank');  }}>
+                        <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
+                                <div>
+                                    <FaSave />
+                                </div>
+                            </IconContext.Provider>
+                            
+                        </NavItem>
+                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { console.log("hello") }}>
+                        <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
+                                <div>
+                                    <FaCloudUploadAlt />
+                                </div>
+                            </IconContext.Provider>
+                            
                         </NavItem>
                     </Nav>
                 </Navbar.Collapse>
