@@ -1,5 +1,5 @@
 body{
-  background-color: black;
+  background-color: white;
 }
 .toggle-color{
    
@@ -52,9 +52,11 @@ body{
     background-color: #3e8e41;
   }
 
+  .lower-canvas{
+    border: 3px solid black;
+  }
 
-
-.canvas-container{
-  outline: thick solid #00ff00
-}
+  .upper-canvas{
+    border: 3px solid black;
+  }
 
