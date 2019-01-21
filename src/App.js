@@ -67,7 +67,6 @@ class App extends Component {
   handleEraser = () => {this.setState({ penColor : { r : 255, g : 255, b : 255, a : 100 }, penSize : 30, toolType : 'pencil', shouldClear : false})}
 
 
-
   render() {
     
     const popover = {
@@ -83,8 +82,6 @@ class App extends Component {
     }
     return (
       <div className="App">
-      
-        {/* <Navbar handleClick={this.handleClick} toggleHidden={this.toggleHidden} isHidden={this.state.isHidden}/> */}
         <ToolBar onSketchChange = {this.onSketchChange} handleTransparent={ this.handleTransparent } handleClick={this.handleClick} handlePenSize={ this.handlePenSize } handleToolType={ this.handleToolType } handleClear={this.handleClear} handleEraser={this.handleEraser}/>
         { this.state.displayColorPicker ? <div style={ popover }>
           <div style={ cover } onClick={ this.handleClose }/>
@@ -118,38 +115,5 @@ class SketchFieldDemo extends React.Component {
      )
   }
 }
-
-
-
-// class Navbar extends React.Component {
-
-//   render(){
-//     return(
-
-
-//       <div className="dropdown">
-//       <button className="dropbtn">Tools</button>
-//       <div className="dropdown-content">
-
-//       <a href="#colorPicker" className="toggle-color" onClick={ this.props.handleClick }>Pick Color</a>
-//       <a href="#morePencils" className="more-pencil" onClick={this.props.toggleHidden}>Pencil</a>
-     
-//       {!this.props.isHidden && (<ul>
-//             <a href="#pencil">Pencil</a>
-//             <a href="#line">Line</a>
-//             <a href="#rectangle">Rectangle</a>
-//             <a href="#circle">Circle</a>
-//             <a href="#select">Select</a>
-//             <a href="#move">Move</a>
-//         </ul>
-//       )}
-//       <a href="#linewidth">Linewidth</a>
-//       </div>
-      
-//     </div>
-
-//     )
-//   }
-// }
 
 export default App;

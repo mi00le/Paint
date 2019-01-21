@@ -35,7 +35,4 @@ export default {
         "Magnet",
         "Flag"
     ]
-
-    
-    
 }
