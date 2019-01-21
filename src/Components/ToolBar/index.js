@@ -43,11 +43,6 @@ export default class Toolbar extends React.Component {
                                 <FaFillDrip></FaFillDrip>
                                 </div>
                             </IconContext.Provider></MenuItem>
-                            <MenuItem eventKey={1.6} onClick={() => this.props.handleToolType("select")}><IconContext.Provider value={{ color: "black",size : "2.5em", className: "global-class-name" }}>
-                                <div>
-                                <FaArrowsAlt></FaArrowsAlt>
-                                </div>
-                            </IconContext.Provider></MenuItem>
                             <MenuItem eventKey={1.7} onClick={this.props.handleEraser}><IconContext.Provider value={{ color: "black",size : "2.5em", className: "global-class-name" }}>
                                 <div>
                                 <FaEraser></FaEraser>
@@ -83,22 +78,7 @@ export default class Toolbar extends React.Component {
                         </NavItem>
                     </Nav>
                     <Nav pullRight>
-                        <NavItem eventKey={1} className="global-class-name" href="#undo" onClick={this.props.undo } disabled={!this.props.canUndo}>
-                        <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
-                                <div>
-                                    <FaUndo />
-                                </div>
-                            </IconContext.Provider>
-                        </NavItem>
-                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { console.log("undo")}}>
-                        <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
-                                <div>
-                                    <FaRedo />
-                                </div>
-                            </IconContext.Provider>
-                            
-                        </NavItem>
-                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank');  }}>
+                        <NavItem eventKey={2} href="#save" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank');  }}>
                         <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaSave />
@@ -106,7 +86,7 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
                             
                         </NavItem>
-                        <NavItem eventKey={2} href="#redo" className="global-class-name" onClick={() => { console.log("hello") }}>
+                        <NavItem eventKey={2} href="#upload" className="global-class-name" onClick={() => { console.log("hello") }}>
                         <IconContext.Provider value={{ color: "white",size : "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaCloudUploadAlt />
