@@ -8,18 +8,21 @@ import reactCSS from 'reactcss'
 import ToolBar from './Components/ToolBar/index.js';
 import dataJsoncontrolled from './Components/JSON/layer.js';
 import words from './Components/JSON/words/index.js';
+import Clock from './Components/Timer';
+import MainScreen from './Components/mainScreen';
+
 
 let arr = [];
 
 arr.push(dataJsoncontrolled);
 
-let b;
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state = {
+      enter : false,
       penColor: { r : 0, g : 0, b : 0, a : 100},
       displayColorPicker: false,
       isHidden : true,
@@ -29,6 +32,13 @@ class App extends Component {
       clearCanvas : 'transparent',
       shouldClear : false
     }
+  }
+
+  handleMain = () => {
+    
+    this.setState({
+      enter : true
+    })
   }
 
   toggleHidden = () => {
@@ -59,13 +69,13 @@ class App extends Component {
   //toggle transparent fill
   handleTransparent = () => { this.setState({ toggleTransparent : !this.state.toggleTransparent, shouldClear : false })}
 
-  
   //handle clear canvas
   handleClear = () => { this.setState({ shouldClear : true })};
 
   //Eraser..
   handleEraser = () => {this.setState({ penColor : { r : 255, g : 255, b : 255, a : 100 }, penSize : 30, toolType : 'pencil', shouldClear : false})}
 
+  
 
   render() {
     
@@ -79,16 +89,21 @@ class App extends Component {
       right: '0px',
       bottom: '0px',
       left: '0px',
+
+      
     }
+    let childArr =[ <ToolBar key={1} onSketchChange = {this.onSketchChange} handleTransparent={ this.handleTransparent } 
+    handleClick={this.handleClick} handlePenSize={ this.handlePenSize } handleToolType={ this.handleToolType } 
+    handleClear={this.handleClear} handleEraser={this.handleEraser}/>, this.state.displayColorPicker ? (<div style={ popover }>
+          <div style={ cover } key={2} onClick={ this.handleClose }/>
+        <SketchPicker key={3} color={ this.state.penColor } onChangeComplete={ this.handleChangeComplete }/>
+    </div>) : null,<Clock key={4}/>,<SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent} reset={ this.state.clearCanvas }  color={ this.state.penColor } size={ this.state.penSize } types={ this.state.toolType }/>];
+
     return (
       <div className="App">
-        <ToolBar onSketchChange = {this.onSketchChange} handleTransparent={ this.handleTransparent } handleClick={this.handleClick} handlePenSize={ this.handlePenSize } handleToolType={ this.handleToolType } handleClear={this.handleClear} handleEraser={this.handleEraser}/>
-        { this.state.displayColorPicker ? <div style={ popover }>
-          <div style={ cover } onClick={ this.handleClose }/>
-        <SketchPicker color={ this.state.penColor } onChangeComplete={ this.handleChangeComplete }/>
-    </div> : null}
-    <SketchFieldDemo clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent} reset={ this.state.clearCanvas }  color={ this.state.penColor } size={ this.state.penSize } types={ this.state.toolType }/>
-      </div>
+        {(!this.state.enter) ? (<MainScreen handleMain={this.handleMain}/> ) : (
+          childArr)} 
+          </div>
     );
   }
 }
@@ -98,6 +113,7 @@ class SketchFieldDemo extends React.Component {
 
   
   render() {
+    //make a copy of arr to store for later
     let a = arr.slice(0);
      return (
        
