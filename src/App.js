@@ -10,6 +10,10 @@ import dataJsoncontrolled from './Components/JSON/layer.js';
 import words from './Components/JSON/words/index.js';
 import Clock from './Components/Timer';
 import Login from './Components/Login';
+import Register from './Components/Register';
+import LoginScreen from './Components/LoginScreen';
+
+
 
 
 let arr = [];
@@ -30,12 +34,10 @@ class App extends Component {
       toolType: "pencil",
       toggleTransparent: true,
       clearCanvas: 'transparent',
-      shouldClear: false
+      shouldClear: false,
+      isLoggedIn : false
     }
   }
-
-  //handle Login 
-  handleLogin = () => { this.setState({ enter: true }) }
 
   //toggle hidden
   toggleHidden = () => { this.setState({ isHidden: !this.state.isHidden }) };
@@ -63,6 +65,15 @@ class App extends Component {
 
   //Eraser..
   handleEraser = () => { this.setState({ penColor: { r: 255, g: 255, b: 255, a: 100 }, penSize: 30, toolType: 'pencil', shouldClear: false }) }
+
+  switchLogin = () => { this.setState({ enter: true }) }
+
+  //get ready to enter
+  getReadyToEnter = (a) => {
+    this.setState({
+      isLoggedIn : a
+    });
+  }
 
 
   render() {
@@ -96,11 +107,17 @@ class App extends Component {
       <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
         reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
     ];
-
+    {/*<Register handleRegister={this.handleRegister}/>*/ }
     return (
       <div className="App">
-        {(!this.state.enter) ? (<Login handleLogin={this.handleLogin} />) : (
-          childArr)}
+
+
+      
+      {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter}/> : childArr}
+        {/* {(!this.state.enter) ?
+          (<Register switchLogin={this.switchLogin} />) :
+            (<Login checkLogin={this.checkLogin} getReadyToEnter={this.getReadyToEnter} />)}
+            {(this.state.isLoggedIn) ? childArr : null} */}
       </div>
     );
   }
