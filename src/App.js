@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './Css/App.css';
 import './Css/sketch.css';
+import './Css/register.css';
 import { SketchField, Tools } from 'react-sketch';
 import { SketchPicker } from 'react-color'
 import reactCSS from 'reactcss'
@@ -96,28 +97,24 @@ class App extends Component {
         handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
         handleClear={this.handleClear} handleEraser={this.handleEraser} />,
 
-      this.state.displayColorPicker ? (
-        <div style={popover}>
-          <div style={cover} key={2} onClick={this.handleClose} />
+      this.state.displayColorPicker && (
+        <div style={popover} key={2}>
+          <div style={cover}  onClick={this.handleClose} />
           <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
-        </div>) : null,
+        </div>),
 
       <Clock key={4} />,
 
       <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
         reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
     ];
-    {/*<Register handleRegister={this.handleRegister}/>*/ }
+
     return (
       <div className="App">
 
 
       
       {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter}/> : childArr}
-        {/* {(!this.state.enter) ?
-          (<Register switchLogin={this.switchLogin} />) :
-            (<Login checkLogin={this.checkLogin} getReadyToEnter={this.getReadyToEnter} />)}
-            {(this.state.isLoggedIn) ? childArr : null} */}
       </div>
     );
   }

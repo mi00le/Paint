@@ -9,6 +9,7 @@
     "react-color": "^2.17.0",
     "react-dom": "^16.7.0",
     "react-icons": "^3.3.0",
+    "react-lazy": "^1.0.3",
     "react-popper": "^0.7.4",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
