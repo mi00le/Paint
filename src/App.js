@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './Css/App.css';
 import './Css/sketch.css';
+import './Css/register.css';
 import { SketchField, Tools } from 'react-sketch';
 import { SketchPicker } from 'react-color'
 import reactCSS from 'reactcss'
@@ -10,6 +11,10 @@ import dataJsoncontrolled from './Components/JSON/layer.js';
 import words from './Components/JSON/words/index.js';
 import Clock from './Components/Timer';
 import Login from './Components/Login';
+import Register from './Components/Register';
+import LoginScreen from './Components/LoginScreen';
+
+
 
 
 let arr = [];
@@ -30,12 +35,10 @@ class App extends Component {
       toolType: "pencil",
       toggleTransparent: true,
       clearCanvas: 'transparent',
-      shouldClear: false
+      shouldClear: false,
+      isLoggedIn : false
     }
   }
-
-  //handle Login 
-  handleLogin = () => { this.setState({ enter: true }) }
 
   //toggle hidden
   toggleHidden = () => { this.setState({ isHidden: !this.state.isHidden }) };
@@ -64,6 +67,15 @@ class App extends Component {
   //Eraser..
   handleEraser = () => { this.setState({ penColor: { r: 255, g: 255, b: 255, a: 100 }, penSize: 30, toolType: 'pencil', shouldClear: false }) }
 
+  switchLogin = () => { this.setState({ enter: true }) }
+
+  //get ready to enter
+  getReadyToEnter = (a) => {
+    this.setState({
+      isLoggedIn : a
+    });
+  }
+
 
   render() {
 
@@ -85,11 +97,11 @@ class App extends Component {
         handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
         handleClear={this.handleClear} handleEraser={this.handleEraser} />,
 
-      this.state.displayColorPicker ? (
-        <div style={popover}>
-          <div style={cover} key={2} onClick={this.handleClose} />
+      this.state.displayColorPicker && (
+        <div style={popover} key={2}>
+          <div style={cover}  onClick={this.handleClose} />
           <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
-        </div>) : null,
+        </div>),
 
       <Clock key={4} />,
 
@@ -99,8 +111,10 @@ class App extends Component {
 
     return (
       <div className="App">
-        {(!this.state.enter) ? (<Login handleLogin={this.handleLogin} />) : (
-          childArr)}
+
+
+      
+      {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter}/> : childArr}
       </div>
     );
   }

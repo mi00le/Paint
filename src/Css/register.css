@@ -1,0 +1,9 @@
+.header{
+    font-family : 'Lobster', cursive;
+    font-size : 5em;
+
+}
+
+#container{
+    min-width: 400px;
+}
