@@ -1,10 +1,13 @@
 
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee } from 'react-icons/fa';
+import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee, FaToggleOff } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 import firebase from '../firebase';
 import Lazy from 'react-lazy';
+
+
+
 
 
 export default class Toolbar extends React.Component {
@@ -12,65 +15,86 @@ export default class Toolbar extends React.Component {
         super(props);
         this.state = {
             username: '',
-            load : false,
+            load: false,
+            out: false,
+            mail: '',
         }
     }
 
-    componentDidMount(){
-        this.currentUser();
-    }
-    
-    currentUser = () => {
-
-
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                this.setState({
-                    username : user.displayName,
-                    load : true
-                })
-                
-            } else {
-                console.log("invalid")
-            }
-        });
-    }
 
     uploadImage = () => {
+        let inputImageName = prompt('Enter Image name');
+        if(inputImageName == null || inputImageName == ''){
+            this.uploadImage();
+        }else{
+        setTimeout(() => {
+            var curr = firebase.auth().currentUser;
+            var email;
+
+            if (curr != null) {
+                email = curr.email;
+            }
+            let c = document.querySelector('.lower-canvas');
 
 
-        let c = document.querySelector('.lower-canvas');
-        // let dataURL = c.toDataURL();
+            let rightNow = new Date();
+            let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
+            // let dataURL = c.toDataURL();
 
-        // // convert base64 to raw binary data held in a string
-        // // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-        // var byteString = atob(dataURL.split(',')[1]);
-        // // separate out the mime component
-        // var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-        // // write the bytes of the string to an ArrayBuffer
-        // var ab = new ArrayBuffer(byteString.length);
-        // var dw = new DataView(ab);
-        // for (var i = 0; i < byteString.length; i++) {
-        //     dw.setUint8(i, byteString.charCodeAt(i));
-        // }
-        // // write the ArrayBuffer to a blob, and you're done
-        // let b = new Blob([ab], { type: mimeString });
+            // // convert base64 to raw binary data held in a string
+            // // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+            // var byteString = atob(dataURL.split(',')[1]);
+            // // separate out the mime component
+            // var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+            // // write the bytes of the string to an ArrayBuffer
+            // var ab = new ArrayBuffer(byteString.length);
+            // var dw = new DataView(ab);
+            // for (var i = 0; i < byteString.length; i++) {
+            //     dw.setUint8(i, byteString.charCodeAt(i));
+            // }
+            // // write the ArrayBuffer to a blob, and you're done
+            // let b = new Blob([ab], { type: mimeString });
+
+            let storage = firebase.storage()
+            let storageRef = storage.ref()
+            let filesRef = storageRef.child(`images/${email}/${inputImageName}.png`);
+
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    this.setState({
+                        username: user.displayName,
+                        load: true
+                    })
+                    var dataURL = c.toDataURL(`image/${email}.png`, 0.75)
+
+                    let uploadTask = filesRef.putString(dataURL, 'data_url');
+                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+                        let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        switch (snapshot.state) {
+                            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                                console.log('Upload is paused');
+                                break;
+                            case firebase.storage.TaskState.RUNNING: // or 'running'
+                                console.log('Upload is running');
+                                break;
+                        }
+                    }, function (error) {
+                        console.log("Ops! An error occured!", error);
+                    }, function () {
+                        uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                            console.log("File available at", downloadURL)
+                        })
+                    });
+                } else {
+                    console.log("invalid User")
+                }
+
+            });
+        }, 2000);
 
 
-        let storage = firebase.storage()
-        let storageRef = storage.ref()
-        let filesRef = storageRef.child('images/bild.png')
 
-
-        var dataURL = c.toDataURL('image/png', 0.75)
-        filesRef.putString(dataURL, 'data_url')
-            .then((snapshot) => {
-                window.alert('Uploaded a blob or file!')
-                var downloadURL = snapshot.downloadURL
-                window.alert(downloadURL)
-            }).catch((error) => {
-                window.alert(error)
-            })
 
         //back to base64
         // var reader = new FileReader();
@@ -80,42 +104,16 @@ export default class Toolbar extends React.Component {
         //     console.log(base64data);
         // }
     }
-
-   
- 
-    // setUsername = () => {
-    //     //refer to 'this' before firebase promises
-    //     var that = this;
-    //     var name = '';
-
-    //     var user = firebase.auth().currentUser;
-
-    //     user.updateProfile({
-    //         displayName: `${that.state.username}`
-    //     }).then(function () {
-    //         console.log(that.state.username);
-    //         // Update successful.
-    //     }).catch(function (error) {
-    //         console.log(error);
-    //     });
-    // }
-
-    // enterUsername = (e) => {
-    //     this.setState({
-    //         username : e.target.value
-    //     })
-    // } 
-
+    }
 
 
 
     render() {
         return (
-           
+
             <Navbar inverse collapseOnSelect>
                 <Navbar.Header>
                     <Navbar.Brand>
-                    {this.state.load && <p>{this.state.username}</p>}
                         <a href="#brand">Paint</a>
                     </Navbar.Brand>
                     <Navbar.Toggle />
@@ -205,10 +203,18 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
 
                         </NavItem>
+                        <NavItem eventKey={3} href="#Logout" className="global-class-name" onClick={() => this.props.getMeOut(false)}>
+                            <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
+                                <div>
+                                    <FaToggleOff />
+                                </div>
+                            </IconContext.Provider>
+
+                        </NavItem>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        
+
         );
     }
 
