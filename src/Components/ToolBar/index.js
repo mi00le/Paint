@@ -1,10 +1,10 @@
 
-import React, { Component } from 'react';
+import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee, FaToggleOff } from 'react-icons/fa';
+import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaFillDrip, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee, FaWindowClose } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 import firebase from '../firebase';
-import Lazy from 'react-lazy';
+
 
 
 
@@ -17,94 +17,60 @@ export default class Toolbar extends React.Component {
             username: '',
             load: false,
             out: false,
-            mail: '',
+            mail: ''
         }
     }
 
 
+
     uploadImage = () => {
-        let inputImageName = prompt('Enter Image name');
-        if(inputImageName == null || inputImageName == ''){
-            this.uploadImage();
-        }else{
-        setTimeout(() => {
-            var curr = firebase.auth().currentUser;
-            var email;
+        var curr = firebase.auth().currentUser;
+        var email;
 
-            if (curr != null) {
-                email = curr.email;
-            }
-            let c = document.querySelector('.lower-canvas');
+        if (curr != null) {
+            email = curr.email;
+        }
+        let data = localStorage.getItem(email);
+        let newCount = JSON.parse(data);
+        newCount++;
+
+        let q = localStorage.setItem(email,JSON.stringify(newCount));
+        let c = document.querySelector('.lower-canvas');
 
 
-            let rightNow = new Date();
-            let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
-            // let dataURL = c.toDataURL();
+        let rightNow = new Date();
+        let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
 
-            // // convert base64 to raw binary data held in a string
-            // // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-            // var byteString = atob(dataURL.split(',')[1]);
-            // // separate out the mime component
-            // var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-            // // write the bytes of the string to an ArrayBuffer
-            // var ab = new ArrayBuffer(byteString.length);
-            // var dw = new DataView(ab);
-            // for (var i = 0; i < byteString.length; i++) {
-            //     dw.setUint8(i, byteString.charCodeAt(i));
-            // }
-            // // write the ArrayBuffer to a blob, and you're done
-            // let b = new Blob([ab], { type: mimeString });
 
-            let storage = firebase.storage()
-            let storageRef = storage.ref()
-            let filesRef = storageRef.child(`images/${email}/${inputImageName}.png`);
+        let storage = firebase.storage()
+        let storageRef = storage.ref()
+        let filesRef = storageRef.child(`images/${email}/${newCount}.png`);
 
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    this.setState({
-                        username: user.displayName,
-                        load: true
+        firebase.auth().onAuthStateChanged((user) => {
+                this.setState({
+                    username: user.displayName,
+                    load: true
+                })
+                var dataURL = c.toDataURL(`image/${newCount}.png`, 0.75)
+
+                let uploadTask = filesRef.putString(dataURL, 'data_url');
+                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+                    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                }, function (error) {
+                    console.log("Ops! An error occured!", error);
+                }, function () {
+                    uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                        console.log("File available at", downloadURL)
+                        alert("Done!");
                     })
-                    var dataURL = c.toDataURL(`image/${email}.png`, 0.75)
-
-                    let uploadTask = filesRef.putString(dataURL, 'data_url');
-                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
-                        let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
-                        switch (snapshot.state) {
-                            case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                console.log('Upload is paused');
-                                break;
-                            case firebase.storage.TaskState.RUNNING: // or 'running'
-                                console.log('Upload is running');
-                                break;
-                        }
-                    }, function (error) {
-                        console.log("Ops! An error occured!", error);
-                    }, function () {
-                        uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                            console.log("File available at", downloadURL)
-                        })
-                    });
-                } else {
-                    console.log("invalid User")
-                }
-
-            });
-        }, 2000);
+                });
 
 
+        });
+}
+            
 
-
-        //back to base64
-        // var reader = new FileReader();
-        // reader.readAsDataURL(b); 
-        // reader.onloadend = function() {
-        //    let base64data = reader.result;                
-        //     console.log(base64data);
-        // }
-    }
-    }
 
 
 
@@ -171,8 +137,6 @@ export default class Toolbar extends React.Component {
                                     <FaCircle />
                                 </div>
                             </IconContext.Provider></MenuItem>
-                            {/* <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem> */}
                         </NavDropdown>
                         <NavItem eventKey={2} href="#clear" onClick={this.props.handleClear}>
                             Clear Canvas
@@ -206,7 +170,7 @@ export default class Toolbar extends React.Component {
                         <NavItem eventKey={3} href="#Logout" className="global-class-name" onClick={() => this.props.getMeOut(false)}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
-                                    <FaToggleOff />
+                                    <FaWindowClose />
                                 </div>
                             </IconContext.Provider>
 

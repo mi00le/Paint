@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './Css/App.css';
 import './Css/sketch.css';
 import './Css/register.css';
-import { SketchField, Tools } from 'react-sketch';
+import { SketchField } from 'react-sketch';
 import { SketchPicker } from 'react-color'
-import reactCSS from 'reactcss'
 import ToolBar from './Components/ToolBar/index.js';
 import dataJsoncontrolled from './Components/JSON/layer.js';
 import words from './Components/JSON/words/index.js';
 import Clock from './Components/Timer';
-import Login from './Components/Login';
-import Register from './Components/Register';
 import LoginScreen from './Components/LoginScreen';
 import firebase from '../src/Components/firebase';
 
@@ -38,28 +34,9 @@ class App extends Component {
       clearCanvas: 'transparent',
       shouldClear: false,
       isLoggedIn: false
+
     }
   }
-
-// componentDidMount(){
-//   this.isOldUser();
-// }
-
-  // isOldUser = () => {
-  //   setTimeout(() =>{
-  //   firebase.auth().onAuthStateChanged((user) => {
-  //     if (user) {
-  //       this.setState({
-  //         isLoggedIn: true
-  //       })
-  //     } else {
-  //       this.setState({
-  //         isLoggedIn: false
-  //       })
-  //     }
-  //   });
-  // },2000);
-  // }
 
 
   //toggle hidden
@@ -101,6 +78,7 @@ class App extends Component {
   getMeOut = (e) => {
     firebase.auth().signOut().then(() => {
       console.log("logged out");
+      localStorage.clear();
       
     }, function(error) {
       console.error('Sign Out Error', error);
