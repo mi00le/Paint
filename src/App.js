@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './Css/App.css';
 import './Css/sketch.css';
 import './Css/register.css';
+import './Css/toolbar.css';
 import { SketchField } from 'react-sketch';
 import { SketchPicker } from 'react-color'
 import ToolBar from './Components/ToolBar/index.js';
@@ -121,6 +122,7 @@ class App extends Component {
 
       <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
         reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
+        
     ];
 
     return (

@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaFillDrip, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee, FaWindowClose } from 'react-icons/fa';
+import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaFillDrip, FaEraser, FaSave, FaCloudUploadAlt, FaDownload, FaWindowClose } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 import firebase from '../firebase';
 
 
 
 
-
+let imgArr = [];
 
 export default class Toolbar extends React.Component {
     constructor(props) {
@@ -17,7 +17,9 @@ export default class Toolbar extends React.Component {
             username: '',
             load: false,
             out: false,
-            mail: ''
+            mail: '',
+            image: '',
+            galleryOpen: false
         }
     }
 
@@ -34,12 +36,18 @@ export default class Toolbar extends React.Component {
         let newCount = JSON.parse(data);
         newCount++;
 
-        let q = localStorage.setItem(email,JSON.stringify(newCount));
+        let q = localStorage.setItem(email, JSON.stringify(newCount));
         let c = document.querySelector('.lower-canvas');
+        let ctx = c.getContext('2d');
+        let getImg = ctx.getImageData(0, 0, c.width, c.height);
+        let compositeOperation = ctx.globalCompositeOperation;
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, c.width, c.height);
 
 
-        let rightNow = new Date();
-        let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
+        // let rightNow = new Date();
+        // let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
 
 
         let storage = firebase.storage()
@@ -47,29 +55,66 @@ export default class Toolbar extends React.Component {
         let filesRef = storageRef.child(`images/${email}/${newCount}.png`);
 
         firebase.auth().onAuthStateChanged((user) => {
-                this.setState({
-                    username: user.displayName,
-                    load: true
-                })
-                var dataURL = c.toDataURL(`image/${newCount}.png`, 0.75)
+            this.setState({
+                load: true
+            })
+            var dataURL = c.toDataURL(`image/${newCount}.png`, 0.20)
 
-                let uploadTask = filesRef.putString(dataURL, 'data_url');
-                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
-                    let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress + '% done');
-                }, function (error) {
-                    console.log("Ops! An error occured!", error);
-                }, function () {
-                    uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                        console.log("File available at", downloadURL)
-                        alert("Done!");
-                    })
-                });
+            let uploadTask = filesRef.putString(dataURL, 'data_url');
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+                let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            }, function (error) {
+                console.log("Ops! An error occured!", error);
+            }, function () {
+                uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                    console.log("File available at", downloadURL)
+
+                    //push image url to localstorage with a key of "email"-IMG
+
+                    if (localStorage.getItem(`${email}-IMG`) === null) {
+                        let temp = [downloadURL];
+                        localStorage.setItem(`${email}-IMG`, JSON.stringify(temp))
+                    } else {
+                        let t = JSON.parse(localStorage.getItem(`${email}-IMG`));
+                        t.push(downloadURL);
+
+                        localStorage.setItem(`${email}-IMG`, JSON.stringify(t));
+                    }
+                    //reset the globalCompositeOperation to what it was
+                    ctx.globalCompositeOperation = compositeOperation;
+                    alert("Finished upload!");
+                })
+            });
 
 
         });
-}
-            
+    }
+
+
+    downloadImage = () => {
+        //get current email 
+        var curr = firebase.auth().currentUser;
+        var email;
+
+        if (curr != null) {
+            email = curr.email;
+        }
+
+        let b = localStorage.getItem(`${email}-IMG`);
+
+        let z = JSON.parse(b);
+
+        for(let i = 0; i < z.length; i++){
+            imgArr.push(z[i]);
+        }
+
+                this.setState({
+                    galleryOpen: true
+                })
+       
+        
+    }
 
 
 
@@ -159,15 +204,46 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
 
                         </NavItem>
-                        <NavItem eventKey={3} href="#profile" className="global-class-name" onClick={() => { console.log("hello") }}>
+                        <NavItem eventKey={3} href="#profile" className="global-class-name" onClick={this.downloadImage}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
-                                    <FaCoffee />
+                                    <FaDownload />
                                 </div>
                             </IconContext.Provider>
 
                         </NavItem>
-                        <NavItem eventKey={3} href="#Logout" className="global-class-name" onClick={() => this.props.getMeOut(false)}>
+                        {this.state.galleryOpen && (
+
+                            <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
+                                <MenuItem eventKey={4.1}>
+                                    <div>
+                                        <img width="200" height="100" alt="0" src={imgArr[0]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.2}>
+                                    <div>
+                                        <img width="200" height="100" alt="1" src={imgArr[1]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.3}>
+                                    <div>
+                                        <img width="200" height="100" alt="2" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.4}>
+                                    <div>
+                                        <img width="200" height="100" alt="3" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.5}>
+                                    <div>
+                                        <img width="200" height="100" alt="4" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                            </NavDropdown>
+
+                        )}
+                        <NavItem eventKey={5} href="#Logout" className="global-class-name" onClick={() => this.props.getMeOut(false)}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaWindowClose />

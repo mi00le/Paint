@@ -94,7 +94,7 @@ export default class LoginScreen extends React.Component {
         var user = firebase.auth().currentUser;
         let email = user.email;
         let b = localStorage.getItem("email");
-        if (email == b) {
+        if (email === b) {
 
             let data = localStorage.getItem(email);
             let newCount = JSON.parse(data);
@@ -104,6 +104,7 @@ export default class LoginScreen extends React.Component {
 
         localStorage.setItem(email, JSON.stringify(this.state.count));
         localStorage.setItem("email", email);
+
     }
 
     render() {
@@ -116,7 +117,8 @@ export default class LoginScreen extends React.Component {
 
         const header = {
             fontFamily: "Lobster, cursive",
-            fontSize: "5em"
+            fontSize: "5em",
+            backgroundImage: "linear-gradient(to right, #4facfe 0%, #00f2fe 100%)"
         }
         return (
             <div id="container" className={!this.state.head ? "Register" : "Login"} key={40}>
@@ -158,7 +160,7 @@ export default class LoginScreen extends React.Component {
                         {!this.state.head ? "Register" : ("Login")}
                     </Button>
                     <p>{this.state.val ? this.props.getReadyToEnter(this.state.val) : ""}</p>
-                    <a href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
+                    <a style={{fontSize:"20px"}} href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
                 </form>
             </div>
         );

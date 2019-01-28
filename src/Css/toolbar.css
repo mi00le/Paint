@@ -1,0 +1,4 @@
+.Gallery > ul {
+    overflow-x: hidden;
+    height: 100px;
+}
