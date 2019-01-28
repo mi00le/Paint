@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './Css/App.css';
 import './Css/sketch.css';
 import './Css/register.css';
-import { SketchField, Tools } from 'react-sketch';
+import './Css/toolbar.css';
+import { SketchField } from 'react-sketch';
 import { SketchPicker } from 'react-color'
-import reactCSS from 'reactcss'
 import ToolBar from './Components/ToolBar/index.js';
 import dataJsoncontrolled from './Components/JSON/layer.js';
 import words from './Components/JSON/words/index.js';
 import Clock from './Components/Timer';
-import Login from './Components/Login';
-import Register from './Components/Register';
 import LoginScreen from './Components/LoginScreen';
+import firebase from '../src/Components/firebase';
 
 
 
@@ -36,9 +34,11 @@ class App extends Component {
       toggleTransparent: true,
       clearCanvas: 'transparent',
       shouldClear: false,
-      isLoggedIn : false
+      isLoggedIn: false
+
     }
   }
+
 
   //toggle hidden
   toggleHidden = () => { this.setState({ isHidden: !this.state.isHidden }) };
@@ -72,10 +72,25 @@ class App extends Component {
   //get ready to enter
   getReadyToEnter = (a) => {
     this.setState({
-      isLoggedIn : a
+      isLoggedIn: a
     });
   }
 
+  getMeOut = (e) => {
+    firebase.auth().signOut().then(() => {
+      console.log("logged out");
+      localStorage.clear();
+      
+    }, function(error) {
+      console.error('Sign Out Error', error);
+    });
+    setTimeout(() =>{
+      this.setState({
+        isLoggedIn : e
+      })
+    },500);
+    
+  }
 
   render() {
 
@@ -93,28 +108,29 @@ class App extends Component {
 
     }
     let childArr = [
-      <ToolBar key={1} onSketchChange={this.onSketchChange} handleTransparent={this.handleTransparent}
+      <ToolBar key={1} getMeOut={this.getMeOut} onSketchChange={this.onSketchChange} handleTransparent={this.handleTransparent}
         handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
         handleClear={this.handleClear} handleEraser={this.handleEraser} />,
 
       this.state.displayColorPicker && (
         <div style={popover} key={2}>
-          <div style={cover}  onClick={this.handleClose} />
+          <div style={cover} onClick={this.handleClose} />
           <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
         </div>),
 
-      <Clock key={4} />,
+      // <Clock key={4} />,
 
       <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
         reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
+        
     ];
 
     return (
       <div className="App">
 
 
-      
-      {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter}/> : childArr}
+
+        {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter} /> : childArr}
       </div>
     );
   }
@@ -143,5 +159,7 @@ class SketchFieldDemo extends React.Component {
     )
   }
 }
+
+
 
 export default App;

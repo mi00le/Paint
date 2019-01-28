@@ -1,24 +1,32 @@
-import React, { Component } from 'react';
+import React from 'react';
 import firebase from '../firebase';
-import Login from '../Login';
-import Register from '../Register';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
-export default class LoginScreen extends React.Component{
-    constructor(props){
+export default class LoginScreen extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
-            head : false,
-            back : true,
-            final : false,
-            username : '',
-            email : '',
-            password : '',
-            val : false
-        }        
+            head: false,
+            back: true,
+            final: false,
+            username: '',
+            email: '',
+            password: '',
+            val: false,
+            count: 0
+        }
     }
 
-    validateForm(){
+    //increment counter for image for later 
+    handleIncrement = () => {
+        this.setState(prevState => {
+            return {
+                count: ++prevState.count
+            }
+        })
+    }
+
+    validateForm() {
         return this.state.email.length > 0 && this.state.password.length > 0;
     }
 
@@ -29,8 +37,8 @@ export default class LoginScreen extends React.Component{
     }
     setValueToTrue = (a) => {
         this.setState({
-            final : a
-           })
+            final: a
+        })
     }
 
     handleReg = event => {
@@ -41,12 +49,12 @@ export default class LoginScreen extends React.Component{
             .createUserWithEmailAndPassword(email, password)
             .then((user) => {
                 this.setState({
-                    head : true,
+                    head: true,
                 })
             })
             .catch((error) => {
-               
-                this.setState({ error: error});
+
+                this.setState({ error: error });
             });
     };
 
@@ -57,51 +65,49 @@ export default class LoginScreen extends React.Component{
             .auth()
             .signInWithEmailAndPassword(email, password)
             .then((user) => {
-                this.setUsername()
+                this.handleIncrement();
+                this.pushEmailToLocal();
                 this.setState({
-                    val : true
+                    val: true
                 })
             })
             .catch((error) => {
-                
+
                 this.setState({ error: error });
             });
     }
 
     switchScreen = () => {
         this.setState({
-            head : true,
+            head: true,
 
         });
     }
     switchBack = () => {
         this.setState({
-            head : false,
+            head: false,
         })
     }
 
-    setUsername = () => {
-        //refer to 'this' before firebase promises
-        var that = this;
+    pushEmailToLocal = () => {
 
         var user = firebase.auth().currentUser;
+        let email = user.email;
+        let b = localStorage.getItem("email");
+        if (email === b) {
 
-        user.updateProfile({
-            displayName: `${that.state.username}`
-        }).then(function () {
-            // Update successful.
-        }).catch(function (error) {
-            console.log(error);
-        });
+            let data = localStorage.getItem(email);
+            let newCount = JSON.parse(data);
+            this.setState({ count: newCount })
+            localStorage.setItem(email, JSON.stringify(newCount));
+        }
+
+        localStorage.setItem(email, JSON.stringify(this.state.count));
+        localStorage.setItem("email", email);
+
     }
 
-    enterUsername = (e) => {
-        this.setState({
-            username : e.target.value
-        })
-    }
-
-    render(){
+    render() {
         const fieldWidth = {
             maxWidth: "40%",
             position: "relative",
@@ -110,15 +116,16 @@ export default class LoginScreen extends React.Component{
         }
 
         const header = {
-            fontFamily : "Lobster, cursive",
-            fontSize : "5em"
+            fontFamily: "Lobster, cursive",
+            fontSize: "5em",
+            backgroundImage: "linear-gradient(to right, #4facfe 0%, #00f2fe 100%)"
         }
-        return(
+        return (
             <div id="container" className={!this.state.head ? "Register" : "Login"} key={40}>
-                    <h1 style={header}>{!this.state.head ? "Register" : "Login"}</h1>
-                    <form style={fieldWidth} onSubmit={!this.state.head ? this.handleReg : (this.handleLogin)}>
-                        <p>{this.props.error}</p>
-                        {!this.state.head && (<FormGroup controlId="username" bsSize="large">
+                <h1 style={header}>{!this.state.head ? "Register" : "Login"}</h1>
+                <form style={fieldWidth} onSubmit={!this.state.head ? this.handleReg : (this.handleLogin)}>
+                    <p>{this.props.error}</p>
+                    {/* {!this.state.head && (<FormGroup controlId="username" bsSize="large">
                             <ControlLabel>Username</ControlLabel>
                             <FormControl
                                 autoFocus
@@ -126,36 +133,36 @@ export default class LoginScreen extends React.Component{
                                 value={this.state.username}
                                 onChange={(e) => this.enterUsername(e)}
                             />
-                        </FormGroup>)}
-                        <FormGroup controlId="email" bsSize="large">
-                            <ControlLabel>Email</ControlLabel>
-                            <FormControl
-                                autoFocus
-                                type="email"
-                                value={this.state.email}
-                                onChange={this.handleChange}
-                            />
-                        </FormGroup>
-                        <FormGroup controlId="password" bsSize="large">
-                            <ControlLabel>Password</ControlLabel>
-                            <FormControl
-                                value={this.state.password}
-                                onChange={this.handleChange}
-                                type="password"
-                            />
-                        </FormGroup>
-                        <Button
-                            block
-                            bsSize="large"
-                            disabled={!this.validateForm()}
-                            type="submit"
-                        >
-                            {!this.state.head ? "Register" : ("Login")}
-                        </Button>
-                        <p>{this.state.val ? this.props.getReadyToEnter(this.state.val) : ""}</p>
-                       <a href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen  : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
-                    </form>
-                </div>
+                        </FormGroup>)} */}
+                    <FormGroup controlId="email" bsSize="large">
+                        <ControlLabel>Email</ControlLabel>
+                        <FormControl
+                            autoFocus
+                            type="email"
+                            value={this.state.email}
+                            onChange={this.handleChange}
+                        />
+                    </FormGroup>
+                    <FormGroup controlId="password" bsSize="large">
+                        <ControlLabel>Password</ControlLabel>
+                        <FormControl
+                            value={this.state.password}
+                            onChange={this.handleChange}
+                            type="password"
+                        />
+                    </FormGroup>
+                    <Button
+                        block
+                        bsSize="large"
+                        disabled={!this.validateForm()}
+                        type="submit"
+                    >
+                        {!this.state.head ? "Register" : ("Login")}
+                    </Button>
+                    <p>{this.state.val ? this.props.getReadyToEnter(this.state.val) : ""}</p>
+                    <a style={{fontSize:"20px"}} href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
+                </form>
+            </div>
         );
     }
 }

@@ -1,121 +1,130 @@
 
-import React, { Component } from 'react';
+import React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaRedo, FaUndo, FaFillDrip, FaArrowsAlt, FaEraser, FaSave, FaCloudUploadAlt, FaCoffee } from 'react-icons/fa';
+import { FaPaintBrush, FaSquareFull, FaCircle, FaMinus, FaFillDrip, FaEraser, FaSave, FaCloudUploadAlt, FaDownload, FaWindowClose } from 'react-icons/fa';
 import { IconContext } from "react-icons";
 import firebase from '../firebase';
-import Lazy from 'react-lazy';
 
+
+
+
+let imgArr = [];
 
 export default class Toolbar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             username: '',
-            load : false,
+            load: false,
+            out: false,
+            mail: '',
+            image: '',
+            galleryOpen: false
         }
     }
 
-    componentDidMount(){
-        this.currentUser();
-    }
-    
-    currentUser = () => {
 
-
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                this.setState({
-                    username : user.displayName,
-                    load : true
-                })
-                
-            } else {
-                console.log("invalid")
-            }
-        });
-    }
 
     uploadImage = () => {
+        var curr = firebase.auth().currentUser;
+        var email;
 
+        if (curr != null) {
+            email = curr.email;
+        }
+        let data = localStorage.getItem(email);
+        let newCount = JSON.parse(data);
+        newCount++;
 
+        let q = localStorage.setItem(email, JSON.stringify(newCount));
         let c = document.querySelector('.lower-canvas');
-        // let dataURL = c.toDataURL();
+        let ctx = c.getContext('2d');
+        let getImg = ctx.getImageData(0, 0, c.width, c.height);
+        let compositeOperation = ctx.globalCompositeOperation;
+        ctx.globalCompositeOperation = "destination-over";
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, c.width, c.height);
 
-        // // convert base64 to raw binary data held in a string
-        // // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-        // var byteString = atob(dataURL.split(',')[1]);
-        // // separate out the mime component
-        // var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-        // // write the bytes of the string to an ArrayBuffer
-        // var ab = new ArrayBuffer(byteString.length);
-        // var dw = new DataView(ab);
-        // for (var i = 0; i < byteString.length; i++) {
-        //     dw.setUint8(i, byteString.charCodeAt(i));
-        // }
-        // // write the ArrayBuffer to a blob, and you're done
-        // let b = new Blob([ab], { type: mimeString });
+
+        // let rightNow = new Date();
+        // let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
 
 
         let storage = firebase.storage()
         let storageRef = storage.ref()
-        let filesRef = storageRef.child('images/bild.png')
+        let filesRef = storageRef.child(`images/${email}/${newCount}.png`);
 
-
-        var dataURL = c.toDataURL('image/png', 0.75)
-        filesRef.putString(dataURL, 'data_url')
-            .then((snapshot) => {
-                window.alert('Uploaded a blob or file!')
-                var downloadURL = snapshot.downloadURL
-                window.alert(downloadURL)
-            }).catch((error) => {
-                window.alert(error)
+        firebase.auth().onAuthStateChanged((user) => {
+            this.setState({
+                load: true
             })
+            var dataURL = c.toDataURL(`image/${newCount}.png`, 0.20)
 
-        //back to base64
-        // var reader = new FileReader();
-        // reader.readAsDataURL(b); 
-        // reader.onloadend = function() {
-        //    let base64data = reader.result;                
-        //     console.log(base64data);
-        // }
+            let uploadTask = filesRef.putString(dataURL, 'data_url');
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+                let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            }, function (error) {
+                console.log("Ops! An error occured!", error);
+            }, function () {
+                uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                    console.log("File available at", downloadURL)
+
+                    //push image url to localstorage with a key of "email"-IMG
+
+                    if (localStorage.getItem(`${email}-IMG`) === null) {
+                        let temp = [downloadURL];
+                        localStorage.setItem(`${email}-IMG`, JSON.stringify(temp))
+                    } else {
+                        let t = JSON.parse(localStorage.getItem(`${email}-IMG`));
+                        t.push(downloadURL);
+
+                        localStorage.setItem(`${email}-IMG`, JSON.stringify(t));
+                    }
+                    //reset the globalCompositeOperation to what it was
+                    ctx.globalCompositeOperation = compositeOperation;
+                    alert("Finished upload!");
+                })
+            });
+
+
+        });
     }
 
-   
- 
-    // setUsername = () => {
-    //     //refer to 'this' before firebase promises
-    //     var that = this;
-    //     var name = '';
 
-    //     var user = firebase.auth().currentUser;
+    downloadImage = () => {
+        //get current email 
+        var curr = firebase.auth().currentUser;
+        var email;
 
-    //     user.updateProfile({
-    //         displayName: `${that.state.username}`
-    //     }).then(function () {
-    //         console.log(that.state.username);
-    //         // Update successful.
-    //     }).catch(function (error) {
-    //         console.log(error);
-    //     });
-    // }
+        if (curr != null) {
+            email = curr.email;
+        }
 
-    // enterUsername = (e) => {
-    //     this.setState({
-    //         username : e.target.value
-    //     })
-    // } 
+        let b = localStorage.getItem(`${email}-IMG`);
+
+        let z = JSON.parse(b);
+
+        for(let i = 0; i < z.length; i++){
+            imgArr.push(z[i]);
+        }
+
+                this.setState({
+                    galleryOpen: true
+                })
+       
+        
+    }
 
 
 
 
     render() {
         return (
-           
+
             <Navbar inverse collapseOnSelect>
                 <Navbar.Header>
                     <Navbar.Brand>
-                    {this.state.load && <p>{this.state.username}</p>}
                         <a href="#brand">Paint</a>
                     </Navbar.Brand>
                     <Navbar.Toggle />
@@ -173,8 +182,6 @@ export default class Toolbar extends React.Component {
                                     <FaCircle />
                                 </div>
                             </IconContext.Provider></MenuItem>
-                            {/* <MenuItem divider />
-                            <MenuItem eventKey={3.3}>Separated link</MenuItem> */}
                         </NavDropdown>
                         <NavItem eventKey={2} href="#clear" onClick={this.props.handleClear}>
                             Clear Canvas
@@ -197,10 +204,49 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
 
                         </NavItem>
-                        <NavItem eventKey={3} href="#profile" className="global-class-name" onClick={() => { console.log("hello") }}>
+                        <NavItem eventKey={3} href="#profile" className="global-class-name" onClick={this.downloadImage}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
-                                    <FaCoffee />
+                                    <FaDownload />
+                                </div>
+                            </IconContext.Provider>
+
+                        </NavItem>
+                        {this.state.galleryOpen && (
+
+                            <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
+                                <MenuItem eventKey={4.1}>
+                                    <div>
+                                        <img width="200" height="100" alt="0" src={imgArr[0]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.2}>
+                                    <div>
+                                        <img width="200" height="100" alt="1" src={imgArr[1]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.3}>
+                                    <div>
+                                        <img width="200" height="100" alt="2" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.4}>
+                                    <div>
+                                        <img width="200" height="100" alt="3" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                                <MenuItem eventKey={4.5}>
+                                    <div>
+                                        <img width="200" height="100" alt="4" src={imgArr[2]}></img>
+                                    </div>
+                                </MenuItem>
+                            </NavDropdown>
+
+                        )}
+                        <NavItem eventKey={5} href="#Logout" className="global-class-name" onClick={() => this.props.getMeOut(false)}>
+                            <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
+                                <div>
+                                    <FaWindowClose />
                                 </div>
                             </IconContext.Provider>
 
@@ -208,7 +254,7 @@ export default class Toolbar extends React.Component {
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        
+
         );
     }
 
