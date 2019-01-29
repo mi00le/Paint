@@ -7,8 +7,8 @@ import { SketchField } from 'react-sketch';
 import { SketchPicker } from 'react-color'
 import ToolBar from './Components/ToolBar/index.js';
 import dataJsoncontrolled from './Components/JSON/layer.js';
-import words from './Components/JSON/words/index.js';
-import Clock from './Components/Timer';
+// import words from './Components/JSON/words/index.js';
+// import Clock from './Components/Timer';
 import LoginScreen from './Components/LoginScreen';
 import firebase from '../src/Components/firebase';
 
@@ -79,7 +79,7 @@ class App extends Component {
   getMeOut = (e) => {
     firebase.auth().signOut().then(() => {
       console.log("logged out");
-      localStorage.clear();
+      
       
     }, function(error) {
       console.error('Sign Out Error', error);

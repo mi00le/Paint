@@ -7,8 +7,8 @@ import firebase from '../firebase';
 
 
 
+let arr = [];
 
-let imgArr = [];
 
 export default class Toolbar extends React.Component {
     constructor(props) {
@@ -19,7 +19,9 @@ export default class Toolbar extends React.Component {
             out: false,
             mail: '',
             image: '',
-            galleryOpen: false
+            galleryOpen: false,
+            numberOfImg: 0,
+            more: 0,
         }
     }
 
@@ -36,10 +38,10 @@ export default class Toolbar extends React.Component {
         let newCount = JSON.parse(data);
         newCount++;
 
-        let q = localStorage.setItem(email, JSON.stringify(newCount));
+        localStorage.setItem(email, JSON.stringify(newCount));
         let c = document.querySelector('.lower-canvas');
         let ctx = c.getContext('2d');
-        let getImg = ctx.getImageData(0, 0, c.width, c.height);
+        ctx.getImageData(0, 0, c.width, c.height);
         let compositeOperation = ctx.globalCompositeOperation;
         ctx.globalCompositeOperation = "destination-over";
         ctx.fillStyle = "white";
@@ -102,22 +104,76 @@ export default class Toolbar extends React.Component {
         }
 
         let b = localStorage.getItem(`${email}-IMG`);
+        if (b == null) {
+            alert("There's no images in the gallery :(");
+        } else {
+            let z = JSON.parse(b);
+            let t = z.length;
+            arr = [];
+            for (let i = 0; i < z.length; i++) {
+                arr.push(z[i]);
+            }
+            this.setState({
+                galleryOpen: true,
+                imgArr: arr.splice(0, arr.length)
+            })
 
-        let z = JSON.parse(b);
 
-        for(let i = 0; i < z.length; i++){
-            imgArr.push(z[i]);
         }
 
-                this.setState({
-                    galleryOpen: true
-                })
-       
-        
     }
 
+    //scroll through imgArr
+    loadNextImg = () => {
+        if (this.state.more >= this.state.imgArr.length - 1) {
+            this.setState({
+                more: 0
+            })
+        } else {
+            this.setState({
+                more: this.state.more + 1
+            })
+        }
+    }
 
+    loadPrevImg = () => {
+        if (this.state.more <= 0) {
+            this.setState({
+                more: this.state.imgArr.length - 1
+            })
+        } else {
+            this.setState({
+                more: this.state.more - 1
+            })
+        }
+    }
 
+    deleteImg = () => {
+        var curr = firebase.auth().currentUser;
+        var email;
+
+        if (curr != null) {
+            email = curr.email;
+        }
+        let b = localStorage.getItem(`${email}-IMG`);
+        let bb = JSON.parse(b);
+        let aa = bb.splice(this.state.more,1);
+        
+        console.log(">> a",aa,bb, "<< b");
+        let s = this.state.imgArr[this.state.more];
+        localStorage.setItem(`${email}-IMG`, JSON.stringify(bb));
+        let matchImg = s.match(/([0-9]{1,3}.[png])\w+/gi);
+   
+        let matchToString = matchImg.join('');
+        let storage = firebase.storage()
+        let storageRef = storage.ref();
+        let removeRef = storageRef.child(`images/${email}/${matchToString}`);
+        removeRef.delete().then(() =>{
+            alert("Image deleted");
+        }).catch(()=>{
+            alert("Unable to delete! Contact customer service!");
+        })
+    }
 
     render() {
         return (
@@ -215,29 +271,15 @@ export default class Toolbar extends React.Component {
                         {this.state.galleryOpen && (
 
                             <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
+                                <div>
+                                    <button onClick={this.loadPrevImg}>Prev</button>
+                                    <button onClick={this.deleteImg} style={{color : "red", margin:"auto"}}>DELETE</button>
+                                    <button onClick={this.loadNextImg} style={{ float: "right" }}>Next</button>
+                                </div>
+
                                 <MenuItem eventKey={4.1}>
                                     <div>
-                                        <img width="200" height="100" alt="0" src={imgArr[0]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.2}>
-                                    <div>
-                                        <img width="200" height="100" alt="1" src={imgArr[1]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.3}>
-                                    <div>
-                                        <img width="200" height="100" alt="2" src={imgArr[2]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.4}>
-                                    <div>
-                                        <img width="200" height="100" alt="3" src={imgArr[2]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.5}>
-                                    <div>
-                                        <img width="200" height="100" alt="4" src={imgArr[2]}></img>
+                                        <img width="300" height="200" alt="No image to display :c" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
                                     </div>
                                 </MenuItem>
                             </NavDropdown>

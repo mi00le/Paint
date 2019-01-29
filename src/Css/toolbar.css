@@ -1,4 +1,8 @@
-.Gallery > ul {
+/* .Gallery > ul {
     overflow-x: hidden;
-    height: 100px;
+    height: 300px;
 }
+.Gallery > ul > li{
+    border-bottom:1px solid black;
+    
+} */
