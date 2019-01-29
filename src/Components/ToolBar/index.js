@@ -7,8 +7,8 @@ import firebase from '../firebase';
 
 
 
+let arr = [];
 
-let imgArr = [];
 
 export default class Toolbar extends React.Component {
     constructor(props) {
@@ -19,7 +19,9 @@ export default class Toolbar extends React.Component {
             out: false,
             mail: '',
             image: '',
-            galleryOpen: false
+            galleryOpen: false,
+            numberOfImg : 0,
+            more : 0,
         }
     }
 
@@ -36,10 +38,10 @@ export default class Toolbar extends React.Component {
         let newCount = JSON.parse(data);
         newCount++;
 
-        let q = localStorage.setItem(email, JSON.stringify(newCount));
+        localStorage.setItem(email, JSON.stringify(newCount));
         let c = document.querySelector('.lower-canvas');
         let ctx = c.getContext('2d');
-        let getImg = ctx.getImageData(0, 0, c.width, c.height);
+        ctx.getImageData(0, 0, c.width, c.height);
         let compositeOperation = ctx.globalCompositeOperation;
         ctx.globalCompositeOperation = "destination-over";
         ctx.fillStyle = "white";
@@ -102,22 +104,37 @@ export default class Toolbar extends React.Component {
         }
 
         let b = localStorage.getItem(`${email}-IMG`);
-
+        if(b == null){
+            alert("There's no images in the gallery :(");
+        }else{
         let z = JSON.parse(b);
-
+        let t = z.length;
+        arr = [];
         for(let i = 0; i < z.length; i++){
-            imgArr.push(z[i]);
+            arr.push(z[i]);
         }
-
                 this.setState({
-                    galleryOpen: true
+                    galleryOpen: true,
+                    imgArr : arr.splice(0, arr.length)
                 })
-       
+               
+
+            }
         
     }
 
-
-
+    //scroll through imgArr
+    loadMoreImg = () => {
+        if(this.state.more >= this.state.imgArr.length-1){
+            this.setState({
+                more : 0
+            })
+        }else{
+        this.setState({
+            more : this.state.more +1
+        })
+    }
+    }
 
     render() {
         return (
@@ -215,29 +232,10 @@ export default class Toolbar extends React.Component {
                         {this.state.galleryOpen && (
 
                             <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
+                                <div><button onClick={this.loadMoreImg}>Next -></button></div>
                                 <MenuItem eventKey={4.1}>
                                     <div>
-                                        <img width="200" height="100" alt="0" src={imgArr[0]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.2}>
-                                    <div>
-                                        <img width="200" height="100" alt="1" src={imgArr[1]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.3}>
-                                    <div>
-                                        <img width="200" height="100" alt="2" src={imgArr[2]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.4}>
-                                    <div>
-                                        <img width="200" height="100" alt="3" src={imgArr[2]}></img>
-                                    </div>
-                                </MenuItem>
-                                <MenuItem eventKey={4.5}>
-                                    <div>
-                                        <img width="200" height="100" alt="4" src={imgArr[2]}></img>
+                                        <img width="300" height="200" alt="0" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
                                     </div>
                                 </MenuItem>
                             </NavDropdown>
