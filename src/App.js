@@ -76,6 +76,7 @@ class App extends Component {
     });
   }
 
+  //Logout 
   getMeOut = (e) => {
     firebase.auth().signOut().then(() => {
       console.log("logged out");
@@ -84,6 +85,7 @@ class App extends Component {
     }, function(error) {
       console.error('Sign Out Error', error);
     });
+    //added timer so it can keep up
     setTimeout(() =>{
       this.setState({
         isLoggedIn : e
@@ -107,6 +109,7 @@ class App extends Component {
 
 
     }
+    //storing components in array to render later
     let childArr = [
       <ToolBar key={1} getMeOut={this.getMeOut} onSketchChange={this.onSketchChange} handleTransparent={this.handleTransparent}
         handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
@@ -118,8 +121,6 @@ class App extends Component {
           <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
         </div>),
 
-      // <Clock key={4} />,
-
       <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
         reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
         
@@ -128,9 +129,8 @@ class App extends Component {
     return (
       <div className="App">
 
-
-
         {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter} /> : childArr}
+
       </div>
     );
   }
@@ -141,7 +141,7 @@ class SketchFieldDemo extends React.Component {
 
 
   render() {
-    //make a copy of arr to store for later
+    //make a copy of arr to store for later --> 
     let a = arr.slice(0);
     return (
 

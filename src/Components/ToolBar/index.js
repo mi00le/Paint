@@ -6,9 +6,8 @@ import { IconContext } from "react-icons";
 import firebase from '../firebase';
 
 
-
+//array for storing image url in & is later used in downloadImage()
 let arr = [];
-
 
 export default class Toolbar extends React.Component {
     constructor(props) {
@@ -37,8 +36,9 @@ export default class Toolbar extends React.Component {
         let data = localStorage.getItem(email);
         let newCount = JSON.parse(data);
         newCount++;
-
         localStorage.setItem(email, JSON.stringify(newCount));
+
+        //accessing canvas and applying a white background to it
         let c = document.querySelector('.lower-canvas');
         let ctx = c.getContext('2d');
         ctx.getImageData(0, 0, c.width, c.height);
@@ -46,11 +46,6 @@ export default class Toolbar extends React.Component {
         ctx.globalCompositeOperation = "destination-over";
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, c.width, c.height);
-
-
-        // let rightNow = new Date();
-        // let res = rightNow.toISOString().slice(0, 19).replace(/:/g, ".").replace(/-/g, ".").replace(/T/g, " ");
-
 
         let storage = firebase.storage()
         let storageRef = storage.ref()
@@ -73,7 +68,6 @@ export default class Toolbar extends React.Component {
                     console.log("File available at", downloadURL)
 
                     //push image url to localstorage with a key of "email"-IMG
-
                     if (localStorage.getItem(`${email}-IMG`) === null) {
                         let temp = [downloadURL];
                         localStorage.setItem(`${email}-IMG`, JSON.stringify(temp))
@@ -108,7 +102,6 @@ export default class Toolbar extends React.Component {
             alert("There's no images in the gallery :(");
         } else {
             let z = JSON.parse(b);
-            let t = z.length;
             arr = [];
             for (let i = 0; i < z.length; i++) {
                 arr.push(z[i]);
@@ -123,8 +116,9 @@ export default class Toolbar extends React.Component {
 
     }
 
-    //scroll through imgArr
+
     loadNextImg = () => {
+        //scroll through imgArr
         if (this.state.more >= this.state.imgArr.length - 1) {
             this.setState({
                 more: 0
@@ -137,6 +131,7 @@ export default class Toolbar extends React.Component {
     }
 
     loadPrevImg = () => {
+        //same as before but backwards
         if (this.state.more <= 0) {
             this.setState({
                 more: this.state.imgArr.length - 1
@@ -149,28 +144,33 @@ export default class Toolbar extends React.Component {
     }
 
     deleteImg = () => {
+        //retrieve current user email
         var curr = firebase.auth().currentUser;
         var email;
 
         if (curr != null) {
             email = curr.email;
         }
+
+        //get user-email from localstorage with image url stored in array
         let b = localStorage.getItem(`${email}-IMG`);
         let bb = JSON.parse(b);
-        let aa = bb.splice(this.state.more,1);
+        let aa = bb.splice(this.state.more, 1);
         
-        console.log(">> a",aa,bb, "<< b");
         let s = this.state.imgArr[this.state.more];
         localStorage.setItem(`${email}-IMG`, JSON.stringify(bb));
+
+        //remove extra from url leaving only img name
         let matchImg = s.match(/([0-9]{1,3}.[png])\w+/gi);
-   
         let matchToString = matchImg.join('');
+
+        //reference to firebase storage
         let storage = firebase.storage()
         let storageRef = storage.ref();
         let removeRef = storageRef.child(`images/${email}/${matchToString}`);
-        removeRef.delete().then(() =>{
+        removeRef.delete().then(() => {
             alert("Image deleted");
-        }).catch(()=>{
+        }).catch(() => {
             alert("Unable to delete! Contact customer service!");
         })
     }
@@ -271,10 +271,10 @@ export default class Toolbar extends React.Component {
                         {this.state.galleryOpen && (
 
                             <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
-                                <div>
+                                <div className="button-container">
                                     <button onClick={this.loadPrevImg}>Prev</button>
-                                    <button onClick={this.deleteImg} style={{color : "red", margin:"auto"}}>DELETE</button>
-                                    <button onClick={this.loadNextImg} style={{ float: "right" }}>Next</button>
+                                    <button onClick={this.deleteImg} style={{ color: "red"}}>DELETE</button>
+                                    <button onClick={this.loadNextImg}>Next</button>
                                 </div>
 
                                 <MenuItem eventKey={4.1}>
