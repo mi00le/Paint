@@ -20,8 +20,8 @@ export default class Toolbar extends React.Component {
             mail: '',
             image: '',
             galleryOpen: false,
-            numberOfImg : 0,
-            more : 0,
+            numberOfImg: 0,
+            more: 0,
         }
     }
 
@@ -104,36 +104,75 @@ export default class Toolbar extends React.Component {
         }
 
         let b = localStorage.getItem(`${email}-IMG`);
-        if(b == null){
+        if (b == null) {
             alert("There's no images in the gallery :(");
-        }else{
-        let z = JSON.parse(b);
-        let t = z.length;
-        arr = [];
-        for(let i = 0; i < z.length; i++){
-            arr.push(z[i]);
-        }
-                this.setState({
-                    galleryOpen: true,
-                    imgArr : arr.splice(0, arr.length)
-                })
-               
-
+        } else {
+            let z = JSON.parse(b);
+            let t = z.length;
+            arr = [];
+            for (let i = 0; i < z.length; i++) {
+                arr.push(z[i]);
             }
-        
+            this.setState({
+                galleryOpen: true,
+                imgArr: arr.splice(0, arr.length)
+            })
+
+
+        }
+
     }
 
     //scroll through imgArr
-    loadMoreImg = () => {
-        if(this.state.more >= this.state.imgArr.length-1){
+    loadNextImg = () => {
+        if (this.state.more >= this.state.imgArr.length - 1) {
             this.setState({
-                more : 0
+                more: 0
             })
-        }else{
-        this.setState({
-            more : this.state.more +1
-        })
+        } else {
+            this.setState({
+                more: this.state.more + 1
+            })
+        }
     }
+
+    loadPrevImg = () => {
+        if (this.state.more <= 0) {
+            this.setState({
+                more: this.state.imgArr.length - 1
+            })
+        } else {
+            this.setState({
+                more: this.state.more - 1
+            })
+        }
+    }
+
+    deleteImg = () => {
+        var curr = firebase.auth().currentUser;
+        var email;
+
+        if (curr != null) {
+            email = curr.email;
+        }
+        let b = localStorage.getItem(`${email}-IMG`);
+        let bb = JSON.parse(b);
+        let aa = bb.splice(this.state.more,1);
+        
+        console.log(">> a",aa,bb, "<< b");
+        let s = this.state.imgArr[this.state.more];
+        localStorage.setItem(`${email}-IMG`, JSON.stringify(bb));
+        let matchImg = s.match(/([0-9]{1,3}.[png])\w+/gi);
+   
+        let matchToString = matchImg.join('');
+        let storage = firebase.storage()
+        let storageRef = storage.ref();
+        let removeRef = storageRef.child(`images/${email}/${matchToString}`);
+        removeRef.delete().then(() =>{
+            alert("Image deleted");
+        }).catch(()=>{
+            alert("Unable to delete! Contact customer service!");
+        })
     }
 
     render() {
@@ -232,10 +271,15 @@ export default class Toolbar extends React.Component {
                         {this.state.galleryOpen && (
 
                             <NavDropdown eventKey={4} title="Gallery" id="basic-nav-dropdown" className="Gallery">
-                                <div><button onClick={this.loadMoreImg}>Next -></button></div>
+                                <div>
+                                    <button onClick={this.loadPrevImg}>Prev</button>
+                                    <button onClick={this.deleteImg} style={{color : "red", margin:"auto"}}>DELETE</button>
+                                    <button onClick={this.loadNextImg} style={{ float: "right" }}>Next</button>
+                                </div>
+
                                 <MenuItem eventKey={4.1}>
                                     <div>
-                                        <img width="300" height="200" alt="0" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
+                                        <img width="300" height="200" alt="No image to display :c" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
                                     </div>
                                 </MenuItem>
                             </NavDropdown>

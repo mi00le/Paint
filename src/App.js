@@ -79,7 +79,7 @@ class App extends Component {
   getMeOut = (e) => {
     firebase.auth().signOut().then(() => {
       console.log("logged out");
-      localStorage.clear();
+      
       
     }, function(error) {
       console.error('Sign Out Error', error);
