@@ -19,6 +19,7 @@ export default class LoginScreen extends React.Component {
 
     //increment counter for image for later 
     handleIncrement = () => {
+        
         this.setState(prevState => {
             return {
                 count: ++prevState.count
@@ -26,7 +27,9 @@ export default class LoginScreen extends React.Component {
         })
     }
 
+    //check length of email & password
     validateForm() {
+        
         return this.state.email.length > 0 && this.state.password.length > 0;
     }
 
@@ -35,12 +38,8 @@ export default class LoginScreen extends React.Component {
             [event.target.id]: event.target.value
         });
     }
-    setValueToTrue = (a) => {
-        this.setState({
-            final: a
-        })
-    }
 
+    //Registration
     handleReg = event => {
         event.preventDefault();
         const { email, password } = this.state;
@@ -53,11 +52,12 @@ export default class LoginScreen extends React.Component {
                 })
             })
             .catch((error) => {
-
+                alert("A user with this email already exists!");
                 this.setState({ error: error });
             });
     };
 
+    //Login
     handleLogin = event => {
         event.preventDefault();
         const { email, password } = this.state;
@@ -77,18 +77,22 @@ export default class LoginScreen extends React.Component {
             });
     }
 
+    //Toggle register & login screen
     switchScreen = () => {
         this.setState({
             head: true,
 
         });
     }
+
+    //Toggle back to prev screen
     switchBack = () => {
         this.setState({
             head: false,
         })
     }
 
+    //save email info to localStorage for use later on
     pushEmailToLocal = () => {
 
         var user = firebase.auth().currentUser;
@@ -112,28 +116,18 @@ export default class LoginScreen extends React.Component {
             maxWidth: "40%",
             position: "relative",
             left: "30%",
-            "marginTop": "100px"
+            marginTop: "100px"
         }
 
         const header = {
             fontFamily: "Lobster, cursive",
-            fontSize: "5em",
-            backgroundImage: "linear-gradient(to right, #4facfe 0%, #00f2fe 100%)"
+            fontSize: "5em"
         }
         return (
             <div id="container" className={!this.state.head ? "Register" : "Login"} key={40}>
-                <h1 style={header}>{!this.state.head ? "Register" : "Login"}</h1>
+                <h1 className="header" style={header}>{!this.state.head ? "Register" : "Login"}</h1>
                 <form style={fieldWidth} onSubmit={!this.state.head ? this.handleReg : (this.handleLogin)}>
                     <p>{this.props.error}</p>
-                    {/* {!this.state.head && (<FormGroup controlId="username" bsSize="large">
-                            <ControlLabel>Username</ControlLabel>
-                            <FormControl
-                                autoFocus
-                                type="username"
-                                value={this.state.username}
-                                onChange={(e) => this.enterUsername(e)}
-                            />
-                        </FormGroup>)} */}
                     <FormGroup controlId="email" bsSize="large">
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
