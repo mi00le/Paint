@@ -153,7 +153,7 @@ export default class LoginScreen extends React.Component {
                     >
                         {!this.state.head ? "Register" : ("Login")}
                     </Button>
-                    <p>{this.state.val ? this.props.getReadyToEnter(this.state.val) : ""}</p>
+                    <p>{this.state.val ? this.props.getReadyToEnter(true) : ""}</p>
                     <a className="switch" style={{fontSize:"20px"}} href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
                 </form>
             </div>
