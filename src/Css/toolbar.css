@@ -1,13 +1,10 @@
-/* .Gallery > ul {
-    overflow-x: hidden;
-    height: 300px;
-}
-.Gallery > ul > li{
-    border-bottom:1px solid black;
-    
-} */
 .button-container{
 display: flex;
 flex-direction: row;
 justify-content: space-between;
+color : Black;
+}
+.button-container > button {
+    font-weight: bold;
+    font-size: 15px;
 }

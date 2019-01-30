@@ -3,21 +3,11 @@ import './Css/App.css';
 import './Css/sketch.css';
 import './Css/register.css';
 import './Css/toolbar.css';
-import { SketchField } from 'react-sketch';
 import { SketchPicker } from 'react-color'
-import ToolBar from './Components/ToolBar/index.js';
-import dataJsoncontrolled from './Components/JSON/layer.js';
-// import words from './Components/JSON/words/index.js';
-// import Clock from './Components/Timer';
 import LoginScreen from './Components/LoginScreen';
-import firebase from '../src/Components/firebase';
-
-
-
-
-let arr = [];
-
-arr.push(dataJsoncontrolled);
+import ToolBar from './Components/ToolBar';
+import SketchFieldDemo from './Components/SketchFieldDemo';
+import firebase from './Components/firebase';
 
 
 class App extends Component {
@@ -71,27 +61,31 @@ class App extends Component {
 
   //get ready to enter
   getReadyToEnter = (a) => {
+
+    //solved rendering error by adding a delay on setState
+  setTimeout(()=>{
     this.setState({
       isLoggedIn: a
     });
+  },50);
   }
 
   //Logout 
   getMeOut = (e) => {
     firebase.auth().signOut().then(() => {
       console.log("logged out");
-      
-      
-    }, function(error) {
+
+
+    }, function (error) {
       console.error('Sign Out Error', error);
     });
     //added timer so it can keep up
-    setTimeout(() =>{
+    setTimeout(() => {
       this.setState({
-        isLoggedIn : e
+        isLoggedIn: e
       })
-    },500);
-    
+    }, 500);
+
   }
 
   render() {
@@ -109,27 +103,26 @@ class App extends Component {
 
 
     }
-    //storing components in array to render later
-    let childArr = [
-      <ToolBar key={1} getMeOut={this.getMeOut} onSketchChange={this.onSketchChange} handleTransparent={this.handleTransparent}
-        handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
-        handleClear={this.handleClear} handleEraser={this.handleEraser} />,
 
-      this.state.displayColorPicker && (
-        <div style={popover} key={2}>
-          <div style={cover} onClick={this.handleClose} />
-          <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
-        </div>),
-
-      <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
-        reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
-        
-    ];
 
     return (
       <div className="App">
 
-        {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter} /> : childArr}
+        {!this.state.isLoggedIn ? <LoginScreen getReadyToEnter={this.getReadyToEnter} /> : ([
+
+          <ToolBar key={1} getMeOut={this.getMeOut} onSketchChange={this.onSketchChange} handleTransparent={this.handleTransparent}
+            handleClick={this.handleClick} handlePenSize={this.handlePenSize} handleToolType={this.handleToolType}
+            handleClear={this.handleClear} handleEraser={this.handleEraser} />,
+
+          this.state.displayColorPicker && (
+            <div style={popover} key={2}>
+              <div style={cover} onClick={this.handleClose} />
+              <SketchPicker key={3} color={this.state.penColor} onChangeComplete={this.handleChangeComplete} />
+            </div>),
+
+          <SketchFieldDemo key={5} clearBoolean={this.state.shouldClear} transparent={this.state.toggleTransparent}
+            reset={this.state.clearCanvas} color={this.state.penColor} size={this.state.penSize} types={this.state.toolType} />
+        ])}
 
       </div>
     );
@@ -137,28 +130,7 @@ class App extends Component {
 }
 
 
-class SketchFieldDemo extends React.Component {
 
-
-  render() {
-    //make a copy of arr to store for later --> 
-    let a = arr.slice(0);
-    return (
-
-      <SketchField width='800px'
-        height='700px'
-        tool={this.props.types}
-        lineColor={`rgba(${this.props.color.r},${this.props.color.g},${this.props.color.b},${this.props.color.a})`}
-        lineWidth={this.props.size}
-        backgroundColor={!this.props.clearBoolean ? 'transparent' : `rgba(${this.props.color.r},${this.props.color.g},${this.props.color.b},100)`}
-        undoSteps={2}
-        fillColor={this.props.transparent ? "transparent" : `rgba(${this.props.color.r},${this.props.color.g},${this.props.color.b},100)`}
-        style={{ position: "relative", margin: "auto", top: "20px" }}
-        value={this.props.clearBoolean ? a : null}
-      />
-    )
-  }
-}
 
 
 
