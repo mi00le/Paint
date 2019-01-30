@@ -54,3 +54,40 @@ body{
 #container{
     min-width: 400px;
 }
+
+.switch{
+	font-weight: bolder;
+	color : #ea576a;
+	-webkit-animation: switchColor 15s infinite;
+	-moz-animation: switchColor 15s infinite;
+	-o-animation: switchColor 15s infinite;
+	-ms-animation: switchColor 15s infinite;
+	animation: switchColor 15s infinite;
+}
+
+@-webkit-keyframes switchColor {
+	0% { color: #ea576a; }
+    50% { color: #23b7c5; }
+    100% { color: #ea576a;}
+}
+@-moz-keyframes color-change {
+	0% { color: #ea576a; }
+    50% { color: #23b7c5; }
+    100% { color: #ea576a;}
+}
+@-ms-keyframes color-change {
+	0% { color: #ea576a; }
+    50% { color: #23b7c5; }
+    100% { color: #ea576a;}
+}
+@-o-keyframes color-change {
+	0% { color: #ea576a; }
+    50% { color: #23b7c5; }
+    100% { color: #ea576a;}
+}
+
+@keyframes switchColor {
+	0% { color: #ea576a; }
+    50% { color: #23b7c5; }
+    100% { color: #ea576a;}
+}
