@@ -155,7 +155,7 @@ export default class Toolbar extends React.Component {
         //get user-email from localstorage with image url stored in array
         let b = localStorage.getItem(`${email}-IMG`);
         let bb = JSON.parse(b);
-        let aa = bb.splice(this.state.more, 1);
+        bb.splice(this.state.more, 1);
         
         let s = this.state.imgArr[this.state.more];
         localStorage.setItem(`${email}-IMG`, JSON.stringify(bb));
@@ -239,12 +239,12 @@ export default class Toolbar extends React.Component {
                                 </div>
                             </IconContext.Provider></MenuItem>
                         </NavDropdown>
-                        <NavItem eventKey={2} href="#clear" onClick={this.props.handleClear}>
+                        <NavItem eventKey={3.4} href="#clear" onClick={this.props.handleClear}>
                             Clear Canvas
                         </NavItem>
                     </Nav>
                     <Nav pullRight>
-                        <NavItem eventKey={2} href="#save" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank'); }}>
+                        <NavItem eventKey={3.5} href="#save" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank'); }}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaSave />
@@ -252,7 +252,7 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
 
                         </NavItem>
-                        <NavItem eventKey={2} href="#upload" className="global-class-name" onClick={this.uploadImage}>
+                        <NavItem eventKey={3.6} href="#upload" className="global-class-name" onClick={this.uploadImage}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaCloudUploadAlt />
@@ -260,7 +260,7 @@ export default class Toolbar extends React.Component {
                             </IconContext.Provider>
 
                         </NavItem>
-                        <NavItem eventKey={3} href="#profile" className="global-class-name" onClick={this.downloadImage}>
+                        <NavItem eventKey={3.7} href="#profile" className="global-class-name" onClick={this.downloadImage}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaDownload />
