@@ -120,31 +120,36 @@ export default class LoginScreen extends React.Component {
         }
 
         const header = {
-            fontFamily: "Lobster, cursive",
-            fontSize: "5em"
+            fontFamily: "Lobster, cursive"
         }
         return (
             <div id="container" className={!this.state.head ? "Register" : "Login"} key={40}>
+                <div className={!this.state.head ? "w3-center w3-animate-zoom0" : "w3-center w3-animate-zoom01"}>
                 <h1 className="header" style={header}>{!this.state.head ? "Register" : "Login"}</h1>
+                </div>
                 <form style={fieldWidth} onSubmit={!this.state.head ? this.handleReg : (this.handleLogin)}>
                     <p>{this.props.error}</p>
-                    <FormGroup controlId="email" bsSize="large">
+                    <FormGroup controlId="email" bsSize="large" className={!this.state.head ? "w3-center w3-animate-left" : "w3-center w3-animate-right" }>
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
                             autoFocus
                             type="email"
                             value={this.state.email}
                             onChange={this.handleChange}
+                            className="input"
                         />
                     </FormGroup>
-                    <FormGroup controlId="password" bsSize="large">
+                    <FormGroup controlId="password" bsSize="large" className={!this.state.head ? "w3-center w3-animate-right" : "w3-center w3-animate-left" }>
                         <ControlLabel>Password</ControlLabel>
                         <FormControl
                             value={this.state.password}
                             onChange={this.handleChange}
                             type="password"
+                            autoComplete="off"
+                            className="input"
                         />
                     </FormGroup>
+                    <div className={!this.state.head ? "w3-center w3-animate-left" : "w3-center w3-animate-right"}>
                     <Button
                         block
                         bsSize="large"
@@ -153,6 +158,7 @@ export default class LoginScreen extends React.Component {
                     >
                         {!this.state.head ? "Register" : ("Login")}
                     </Button>
+                    </div>
                     <p>{this.state.val ? this.props.getReadyToEnter(true) : ""}</p>
                     <a className="switch" style={{fontSize:"20px"}} href={!this.state.head ? "#login" : "#register"} onClick={!this.state.head ? this.switchScreen : this.switchBack}>{!this.state.head ? "Already an account? Login!" : "New user? Register!"}</a>
                 </form>
