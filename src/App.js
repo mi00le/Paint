@@ -29,7 +29,25 @@ class App extends Component {
     }
   }
 
+  componentDidMount(){
+    this.checkIfLoggedIn();
+  }
 
+  checkIfLoggedIn = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          isLoggedIn : true
+        });
+      } else {
+        this.setState({
+        isLoggedIn : false,
+        });
+      }
+    });
+  }
+
+  
   //toggle hidden
   toggleHidden = () => { this.setState({ isHidden: !this.state.isHidden }) };
 
@@ -84,7 +102,7 @@ class App extends Component {
       this.setState({
         isLoggedIn: e
       })
-    }, 500);
+    }, 100);
 
   }
 
