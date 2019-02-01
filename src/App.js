@@ -24,7 +24,8 @@ class App extends Component {
       toggleTransparent: true,
       clearCanvas: 'transparent',
       shouldClear: false,
-      isLoggedIn: false
+      isLoggedIn: false,
+      init : false
 
     }
   }
@@ -37,11 +38,13 @@ class App extends Component {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({
-          isLoggedIn : true
+          isLoggedIn : true,
+          init : true
         });
       } else {
         this.setState({
         isLoggedIn : false,
+        init : true
         });
       }
     });
@@ -122,7 +125,9 @@ class App extends Component {
 
     }
 
-
+    if(!this.state.init){
+      return <div></div>
+    }
     return (
       <div className="App">
 

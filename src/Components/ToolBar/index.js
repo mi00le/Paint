@@ -279,7 +279,7 @@ export default class Toolbar extends React.Component {
 
                                 <MenuItem eventKey={4.1}>
                                     <div>
-                                        <img width="300" height="200" alt="No image to display :c" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
+                                        <img width="300" height="200" alt="Theres nothing to display :(" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
                                     </div>
                                 </MenuItem>
                             </NavDropdown>
