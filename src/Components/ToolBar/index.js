@@ -244,7 +244,7 @@ export default class Toolbar extends React.Component {
                         </NavItem>
                     </Nav>
                     <Nav pullRight>
-                        <NavItem eventKey={3.5} href="#save" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank'); }}>
+                        <NavItem eventKey={3.5} href="#save" className="global-class-name" onClick={() => { let c = document.querySelector('.lower-canvas'); let dataURL = c.toDataURL().replace("image/png", "image/octet-stream"); window.open(`${dataURL}`, '_blank');  }}>
                             <IconContext.Provider value={{ color: "white", size: "2em", className: "global-class-name" }}>
                                 <div>
                                     <FaSave />
@@ -279,7 +279,7 @@ export default class Toolbar extends React.Component {
 
                                 <MenuItem eventKey={4.1}>
                                     <div>
-                                        <img width="300" height="200" alt="No image to display :c" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
+                                        <img width="300" height="200" alt="Theres nothing to display :(" src={this.state.imgArr[this.state.more]} onClick={() => window.open(this.state.imgArr[this.state.more])}></img>
                                     </div>
                                 </MenuItem>
                             </NavDropdown>

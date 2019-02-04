@@ -24,12 +24,33 @@ class App extends Component {
       toggleTransparent: true,
       clearCanvas: 'transparent',
       shouldClear: false,
-      isLoggedIn: false
+      isLoggedIn: false,
+      init : false
 
     }
   }
 
+  componentDidMount(){
+    this.checkIfLoggedIn();
+  }
 
+  checkIfLoggedIn = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          isLoggedIn : true,
+          init : true
+        });
+      } else {
+        this.setState({
+        isLoggedIn : false,
+        init : true
+        });
+      }
+    });
+  }
+
+  
   //toggle hidden
   toggleHidden = () => { this.setState({ isHidden: !this.state.isHidden }) };
 
@@ -84,7 +105,7 @@ class App extends Component {
       this.setState({
         isLoggedIn: e
       })
-    }, 500);
+    }, 100);
 
   }
 
@@ -104,7 +125,9 @@ class App extends Component {
 
     }
 
-
+    if(!this.state.init){
+      return <div></div>
+    }
     return (
       <div className="App">
 
